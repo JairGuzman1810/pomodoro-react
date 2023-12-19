@@ -8,9 +8,10 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "./src/components/Header";
 import Timer from "./src/components/Timer";
+import { Audio } from "expo-av";
 
 const colors = ["#F7D6BF", "#AFEEEE", "#88D8BD"];
 
@@ -21,8 +22,40 @@ export default function App() {
   const [currentTime, setCurrentTime] = useState("POMO" | "SHORT" | "BREAK");
   const [isActive, setIsActive] = useState(false);
 
+  //Nos ayuda acceder a los ciclos de vida de un elemento
+  useEffect(() => {
+    let interval = null;
+
+    if (isActive) {
+      // Si el temporizador está activo, inicia un intervalo que se ejecuta cada segundo
+      interval = setInterval(() => {
+        setTime((prevTime) => prevTime - 1); // Reduce el tiempo en 1 segundo
+      }, 1000);
+    } else {
+      // Si el temporizador está inactivo, limpia el intervalo para detener la cuenta regresiva
+      clearInterval(interval);
+    }
+
+    if (time === 0) {
+      setIsActive(false);
+      const newTime = currentTime === 0 ? 25 : currentTime === 1 ? 5 : 15;
+      setTime(newTime * 60);
+    }
+
+    // Limpia el intervalo cuando el componente se desmonta o cuando cambian isActive o time
+    return () => clearInterval(interval);
+  }, [isActive, time]);
+
   function handleStartStop() {
     setIsActive(!isActive);
+    playSound(); // Reproduce un sonido (debe estar definido en algún lugar)
+  }
+
+  async function playSound() {
+    const { sound } = await Audio.Sound.createAsync(
+      require("./assets/click.mp3")
+    );
+    await sound.playAsync();
   }
 
   return (
@@ -41,6 +74,7 @@ export default function App() {
           currentTime={currentTime}
           setCurrentTime={setCurrentTime}
           setTime={setTime}
+          setIsActive={setIsActive}
         />
         <Timer time={time} />
         <TouchableOpacity style={styles.button} onPress={handleStartStop}>

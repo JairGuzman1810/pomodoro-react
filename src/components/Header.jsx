@@ -1,11 +1,17 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const options = ["Pomodoro", "Short Break", "Long Break"];
-export default function Header({ currentTime, setCurrentTime, setTime }) {
+export default function Header({
+  currentTime,
+  setCurrentTime,
+  setTime,
+  setIsActive,
+}) {
   function handlePress(index) {
     //Asi se asigna a una variable const un valor
     //como es inmutable, entonces se debe realizar de esa forma
     //:15 es como el else, si no es 0 o 1 entonces sera 2, entonces 15
+    setIsActive(false);
     const newTime = index === 0 ? 25 : index === 1 ? 5 : 15;
 
     setCurrentTime(index);
