@@ -29,7 +29,7 @@ export default function App() {
     if (isActive) {
       // Si el temporizador está activo, inicia un intervalo que se ejecuta cada segundo
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime - 1); // Reduce el tiempo en 1 segundo
+        setTime(time - 1); // Reduce el tiempo en 1 segundo
       }, 1000);
     } else {
       // Si el temporizador está inactivo, limpia el intervalo para detener la cuenta regresiva
